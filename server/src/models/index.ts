@@ -4,6 +4,8 @@ import Region from "./Region";
 import HotelGroup from "./HotelGroup";
 import Airport from "./Airport";
 import sequelize from "../config/database";
+import User from "./User";
+import Permission from "./Permission";
 
 City.hasMany(Hotel, { foreignKey: "CityID" });
 Hotel.belongsTo(City, { foreignKey: "CityID" });
@@ -17,4 +19,4 @@ Hotel.belongsTo(HotelGroup, { foreignKey: "GroupID" });
 City.hasMany(Airport, { foreignKey: "CityID" });
 Airport.belongsTo(City, { foreignKey: "CityID" });
 
-export { sequelize, Hotel, City, Region, HotelGroup, Airport };
+export { sequelize, Hotel, City, Region, HotelGroup, Airport, User, Permission };
