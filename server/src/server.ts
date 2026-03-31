@@ -1,8 +1,10 @@
 import express from "express";
-import { sequelize, Hotel, Airport } from "./models";
+import { sequelize, Hotel, Airport, Review, HotelRating } from "./models";
 import { seedHotels } from "./seed/seedHotels";
 import { seedAirports } from "./seed/seedAirports";
 import hotelRoutes from "./routes/hotelRoutes";
+import { seedReviews } from "./seed/seedReviews";
+import { seedMetadata } from "./seed/seedMetadata";
 
 const app = express();
 const port = process.env.PORT_SERVER || 3000;
@@ -23,7 +25,29 @@ async function start() {
         console.log("No airports found, seeding airports...");
         await seedAirports();
     } else {
-        console.log(`Database already has ${airportCount} airports, skipping seed`);
+        console.log(
+            `Database already has ${airportCount} airports, skipping seed`,
+        );
+    }
+
+    const ratingCount = await HotelRating.count();
+    if (ratingCount === 0) {
+        console.log("No metadata scores found, calculating...");
+        await seedMetadata();
+    } else {
+        console.log(
+            `Database already has ${ratingCount} hotel ratings, skipping`,
+        );
+    }
+
+    const reviewCount = await Review.count();
+    if (reviewCount === 0) {
+        console.log("No reviews found, seeding...");
+        await seedReviews();
+    } else {
+        console.log(
+            `Database already has ${reviewCount} reviews, skipping seed`,
+        );
     }
 
     app.use(express.json());
