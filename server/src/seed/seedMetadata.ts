@@ -81,7 +81,7 @@ export async function seedMetadata() {
 
             // update la metadatele hotelului
             await hotel.update({
-                FloorsNumber: parseInt(String(DEFAULT_FLOORS)),
+                FloorsNumber: parseInt(String(DEFAULT_FLOORS)), // le punem default in db pentru moment, dar random pentru scor
                 RoomsNumber: parseInt(String(DEFAULT_ROOMS)),
                 HotelStars: hotel.SabrePropertyRating
                     ? parseFloat(String(hotel.SabrePropertyRating))

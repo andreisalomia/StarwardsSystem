@@ -51,6 +51,7 @@ Respond with this exact format:
     });
 
     const text = response.content[0].type === "text" ? response.content[0].text : "";
+    // claude raspunde cu json in markdown
     const cleaned = text.replace(/```json|```/g, "").trim();
     return JSON.parse(cleaned);
 }
