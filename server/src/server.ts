@@ -5,6 +5,7 @@ import { seedAirports } from "./seed/seedAirports";
 import hotelRoutes from "./routes/hotelRoutes";
 import { seedReviews } from "./seed/seedReviews";
 import { seedMetadata } from "./seed/seedMetadata";
+import ratingRoutes from "./routes/ratingRoutes";
 
 const app = express();
 const port = process.env.PORT_SERVER || 3000;
@@ -52,6 +53,7 @@ async function start() {
 
     app.use(express.json());
 
+    app.use("/hotels", ratingRoutes);
     app.use("/hotels", hotelRoutes);
 
     app.listen(port, () => {
