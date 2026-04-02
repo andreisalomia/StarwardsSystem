@@ -1,5 +1,5 @@
 import express from "express";
-import { sequelize, Hotel, Airport } from "./models";
+import { sequelize, Hotel, Airport, Review, HotelRating } from "./models";
 import { seedHotels } from "./seed/seedHotels";
 import { seedAirports } from "./seed/seedAirports";
 import hotelRoutes from "./routes/hotelRoutes";
@@ -8,6 +8,9 @@ import cookieParser from "cookie-parser";
 import { default as User } from "./models/User";
 import { default as Permission } from "./models/Permission";
 import bcrypt from "bcryptjs";
+import { seedReviews } from "./seed/seedReviews";
+import { seedMetadata } from "./seed/seedMetadata";
+import ratingRoutes from "./routes/ratingRoutes";
 
 const app = express();
 const port = process.env.PORT_SERVER || 3000;
@@ -28,14 +31,34 @@ async function start() {
         console.log("No airports found, seeding airports...");
         await seedAirports();
     } else {
-        console.log(`Database already has ${airportCount} airports, skipping seed`);
+        console.log(
+            `Database already has ${airportCount} airports, skipping seed`,
+        );
     }
 
-    app.use(express.json());
-    app.use(cookieParser());
+    const ratingCount = await HotelRating.count();
+    if (ratingCount === 0) {
+        console.log("No metadata scores found, calculating...");
+        await seedMetadata();
+    } else {
+        console.log(
+            `Database already has ${ratingCount} hotel ratings, skipping`,
+        );
+    }
+
+    const reviewCount = await Review.count();
+    if (reviewCount === 0) {
+        console.log("No reviews found, seeding...");
+        await seedReviews();
+    } else {
+        console.log(
+            `Database already has ${reviewCount} reviews, skipping seed`,
+        );
+    }
 
     app.use("/auth", authRoutes);
 
+    app.use("/hotels", ratingRoutes);
     app.use("/hotels", hotelRoutes);
 
     // seed permissions and an admin user if none exist
@@ -57,6 +80,9 @@ async function start() {
         const hash = await bcrypt.hash("admin123", 10);
         await User.create({ name: "Admin", email: "admin@example.com", password_hash: hash, role: "Administrator", hotel_id: null, group_id: null });
     }
+
+    app.use(express.json());
+    app.use(cookieParser());
 
     app.listen(port, () => {
         console.log(`Server listening on port ${port}`);
