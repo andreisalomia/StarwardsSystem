@@ -56,11 +56,6 @@ async function start() {
         );
     }
 
-    app.use("/auth", authRoutes);
-
-    app.use("/hotels", ratingRoutes);
-    app.use("/hotels", hotelRoutes);
-
     // seed permissions and an admin user if none exist
     const permCount = await Permission.count();
     if (permCount === 0) {
@@ -83,6 +78,11 @@ async function start() {
 
     app.use(express.json());
     app.use(cookieParser());
+
+    app.use("/auth", authRoutes);
+
+    app.use("/hotels", ratingRoutes);
+    app.use("/hotels", hotelRoutes);
 
     app.listen(port, () => {
         console.log(`Server listening on port ${port}`);
