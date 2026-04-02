@@ -7,8 +7,8 @@ export default defineConfig({
     server: {
         host: true,
         proxy: {
+            "/api": "http://starwards_server:3000",
             "/auth": "http://starwards_server:3000",
-            "/hotels": "http://starwards_server:3000",
         },
     },
 });

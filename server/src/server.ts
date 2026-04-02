@@ -16,7 +16,7 @@ const app = express();
 const port = process.env.PORT_SERVER || 3000;
 
 async function start() {
-    await sequelize.sync({ force: true });
+    await sequelize.sync({ force: false });
 
     const hotelCount = await Hotel.count();
     if (hotelCount === 0) {
@@ -31,9 +31,7 @@ async function start() {
         console.log("No airports found, seeding airports...");
         await seedAirports();
     } else {
-        console.log(
-            `Database already has ${airportCount} airports, skipping seed`,
-        );
+        console.log(`Database already has ${airportCount} airports, skipping seed`);
     }
 
     const ratingCount = await HotelRating.count();
@@ -41,9 +39,7 @@ async function start() {
         console.log("No metadata scores found, calculating...");
         await seedMetadata();
     } else {
-        console.log(
-            `Database already has ${ratingCount} hotel ratings, skipping`,
-        );
+        console.log(`Database already has ${ratingCount} hotel ratings, skipping`);
     }
 
     const reviewCount = await Review.count();
@@ -51,20 +47,23 @@ async function start() {
         console.log("No reviews found, seeding...");
         await seedReviews();
     } else {
-        console.log(
-            `Database already has ${reviewCount} reviews, skipping seed`,
-        );
+        console.log(`Database already has ${reviewCount} reviews, skipping seed`);
     }
 
     // seed permissions and an admin user if none exist
     const permCount = await Permission.count();
     if (permCount === 0) {
         console.log("Seeding default permissions...");
-        const roles = ["Hotel Manager","Group Manager","Traveler","Administrator","Data Operator"];
-        const resources = ["hotels","airports","users"];
+        const roles = ["Hotel Manager", "Group Manager", "Traveler", "Administrator", "Data Operator"];
+        const resources = ["hotels", "airports", "users"];
         for (const role of roles) {
             for (const resource of resources) {
-                await Permission.create({ role, resource, can_read: role === "Administrator" || role === "Data Operator", can_write: role === "Administrator" });
+                await Permission.create({
+                    role,
+                    resource,
+                    can_read: role === "Administrator" || role === "Data Operator",
+                    can_write: role === "Administrator",
+                });
             }
         }
     }
@@ -73,16 +72,22 @@ async function start() {
     if (adminCount === 0) {
         console.log("Seeding admin user (email: admin@example.com / password: admin123)...");
         const hash = await bcrypt.hash("admin123", 10);
-        await User.create({ name: "Admin", email: "admin@example.com", password_hash: hash, role: "Administrator", hotel_id: null, group_id: null });
+        await User.create({
+            name: "Admin",
+            email: "admin@example.com",
+            password_hash: hash,
+            role: "Administrator",
+            hotel_id: null,
+            group_id: null,
+        });
     }
 
     app.use(express.json());
     app.use(cookieParser());
 
+    app.use("/api/hotels", ratingRoutes);
+    app.use("/api/hotels", hotelRoutes);
     app.use("/auth", authRoutes);
-
-    app.use("/hotels", ratingRoutes);
-    app.use("/hotels", hotelRoutes);
 
     app.listen(port, () => {
         console.log(`Server listening on port ${port}`);
