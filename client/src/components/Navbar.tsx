@@ -22,10 +22,17 @@ export default function Navbar() {
                             Hotels
                         </Link>
                     </li>
-                    {(user?.role === "Administrator" || user?.role === "Data Operator") && (
+                    {(user?.role === "Administrator" || user?.role === "Data Operator" || user?.role === "Group Manager") && (
                         <li className="nav-item">
                             <Link className="nav-link" to="/users">
                                 Users
+                            </Link>
+                        </li>
+                    )}
+                    {user?.role === "Administrator" && (
+                        <li className="nav-item">
+                            <Link className="nav-link" to="/permissions">
+                                Permissions
                             </Link>
                         </li>
                     )}

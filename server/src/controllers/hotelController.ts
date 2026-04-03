@@ -3,7 +3,9 @@ import * as hotelService from "../services/hotelService";
 
 export const getAllHotels = async (req: Request, res: Response): Promise<void> => {
     try {
-        const hotels = await hotelService.findAllHotels();
+        const user = (req as any).user;
+        // return hotels scoped to the requesting user
+        const hotels = await hotelService.findHotelsForUser(user);
         res.json(hotels);
     } catch (err) {
         res.status(500).json({ error: "Failed to retrieve hotels" });

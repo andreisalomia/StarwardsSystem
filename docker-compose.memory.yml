@@ -1,0 +1,24 @@
+version: '3.8'
+
+# Override file to request memory limits for services (7g)
+services:
+  db:
+    mem_limit: 7g
+    deploy:
+      resources:
+        limits:
+          memory: 7g
+
+  server:
+    mem_limit: 7g
+    deploy:
+      resources:
+        limits:
+          memory: 7g
+
+  client:
+    mem_limit: 7g
+    deploy:
+      resources:
+        limits:
+          memory: 7g
